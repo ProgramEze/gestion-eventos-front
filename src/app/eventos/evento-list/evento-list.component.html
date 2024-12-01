@@ -1,0 +1,261 @@
+<div class="container">
+	<div class="mb-1">
+		<app-confirm-modal
+			*ngIf="showModal"
+			[message]="message"
+			[showModal]="showModal"
+			(confirmAction)="confirmarEliminacion($event)"
+		></app-confirm-modal>
+		<h2 class="text-center mt-1">Listado de Eventos</h2>
+		<!-- Filtro de búsqueda -->
+		<div class="d-flex align-items-center">
+			<div class="container">
+				<!-- Fila de botones y filtros, divididos en dos partes -->
+				<div class="d-flex justify-content-between">
+					<!-- Columna izquierda (botón y filtros por fecha) -->
+					<div class="d-flex align-items-center flex-column">
+						<!-- Botón para crear nuevo evento -->
+						<button
+							*ngIf="isOrganizer"
+							class="btn btn-success me-auto w-auto mb-2"
+							[routerLink]="['/eventos/create']"
+						>
+							Crear Nuevo Evento
+						</button>
+
+						<!-- Filtros por fecha -->
+						<span class="me-auto">Buscar eventos por fecha:</span>
+						<div class="d-flex mb-2">
+							<div
+								class="input-group align-items-center me-3"
+								style="width: 250px"
+							>
+								<span class="me-1">Desde:</span>
+								<input
+									type="date"
+									class="form-control"
+									[(ngModel)]="fechaInicio"
+									(ngModelChange)="aplicarFiltro()"
+									aria-label="Fecha de inicio"
+									placeholder="Fecha de inicio"
+								/>
+							</div>
+							<div
+								class="input-group align-items-center me-3"
+								style="width: 250px"
+							>
+								<span class="me-3">Hasta:</span>
+								<input
+									type="date"
+									class="form-control"
+									[(ngModel)]="fechaFin"
+									(ngModelChange)="aplicarFiltro()"
+									aria-label="Fecha de fin"
+									placeholder="Fecha de fin"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<!-- Columna derecha (buscador y select de cantidad de filas) -->
+					<div
+						class="d-flex flex-column justify-content-end align-items-end"
+						style="width: 45%"
+					>
+						<!-- Filtro de búsqueda por nombre -->
+						<div class="input-group mb-2" style="width: 400px">
+							<input
+								type="text"
+								class="form-control"
+								placeholder="Buscar por nombre, ubicación o descripción..."
+								[(ngModel)]="filtro"
+								(ngModelChange)="aplicarFiltro()"
+								aria-label="Buscar"
+							/>
+						</div>
+
+						<!-- Selector de número de filas -->
+						<div class="d-flex align-items-center">
+							<span class="me-2">Número de filas:</span>
+							<select
+								class="form-select"
+								[(ngModel)]="tamanoPagina"
+								(change)="actualizarTamanoPagina()"
+								aria-label="Número de filas por página"
+								style="width: 80px"
+							>
+								<option
+									*ngFor="let option of opcionesFilas"
+									[value]="option"
+								>
+									{{ option }}
+								</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Tabla de eventos -->
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr class="text-center">
+					<th
+						scope="col"
+						(click)="ordenarPor('nombre')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'nombre'
+						}"
+						style="cursor: pointer"
+					>
+						Nombre
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('fecha')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'fecha'
+						}"
+						style="cursor: pointer"
+					>
+						Fecha
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('ubicacion')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'ubicacion'
+						}"
+						style="cursor: pointer"
+					>
+						Ubicación
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('descripcion')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'descripcion'
+						}"
+						style="cursor: pointer"
+					>
+						Descripción
+					</th>
+					<th
+						class="text-center justify-content-center align-items-center"
+						scope="col"
+					>
+						Acciones
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-center" *ngFor="let evento of eventos">
+					<td>{{ evento.nombre }}</td>
+					<td>{{ formatearFecha(evento.fecha.toString()) }}</td>
+					<td>{{ evento.ubicacion }}</td>
+					<td>{{ evento.descripcion }}</td>
+					<td class="d-flex text-center">
+						<div
+							class="justify-content-center centered d-flex justify-content-center align-items-center"
+						>
+							<button
+								class="btn btn-sm btn-primary me-2"
+								title="Ver detalles"
+								(click)="editarEvento(evento.idEvento)"
+							>
+								<i class="bi bi-chevron-left"></i>
+							</button>
+							<button
+								*ngIf="isOrganizer"
+								class="btn btn-sm btn-warning me-2"
+								title="Editar evento"
+								(click)="editarEvento(evento.idEvento)"
+							>
+								<i class="bi bi-pencil"></i>
+							</button>
+							<button
+								*ngIf="isOrganizer"
+								class="btn btn-sm btn-secondary me-2"
+								title="Ver participantes"
+								(click)="verParticipaciones(evento.idEvento)"
+							>
+								<i class="bi bi-eye"></i>
+							</button>
+							<button
+								*ngIf="isOrganizer"
+								title="Eliminar asistente"
+								class="btn btn-danger btn-sm"
+								(click)="eliminarEvento(evento)"
+							>
+								<i class="bi bi-trash"></i>
+							</button>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Paginación -->
+	<nav *ngIf="totalPaginas > 1" aria-label="Paginación de asistentes">
+		<ul class="pagination justify-content-center">
+			<!-- Botón de página anterior -->
+			<li class="page-item" [ngClass]="{ disabled: paginaActual === 1 }">
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							paginaActual === 1 ? '#A5D6A7' : '#33691e',
+						color: paginaActual === 1 ? '#000000' : 'white'
+					}"
+					(click)="cambiarPagina(paginaActual - 1)"
+				>
+					<i class="bi bi-chevron-left"></i> Anterior
+				</button>
+			</li>
+
+			<!-- Botones de páginas -->
+			<li
+				*ngFor="let pagina of paginas"
+				class="page-item"
+				[ngClass]="{ active: pagina === paginaActual }"
+			>
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							pagina === paginaActual ? '#33691e' : '#A5D6A7',
+						color: pagina === paginaActual ? 'white' : 'gray'
+					}"
+					(click)="cambiarPagina(pagina)"
+				>
+					{{ pagina }}
+				</button>
+			</li>
+
+			<!-- Botón de página siguiente -->
+			<li
+				class="page-item"
+				[ngClass]="{ disabled: paginaActual === totalPaginas }"
+			>
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							paginaActual === totalPaginas
+								? '#A5D6A7'
+								: '#33691e',
+						color:
+							paginaActual === totalPaginas ? '#000000' : 'white'
+					}"
+					(click)="cambiarPagina(paginaActual + 1)"
+				>
+					Siguiente <i class="bi bi-chevron-right"></i>
+				</button>
+			</li>
+		</ul>
+	</nav>
+</div>

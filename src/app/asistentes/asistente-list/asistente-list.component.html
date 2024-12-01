@@ -1,0 +1,192 @@
+<div class="container mt-5">
+	<!-- Fila de título y controles -->
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<app-confirm-modal
+			*ngIf="showModal"
+			[message]="message"
+			[showModal]="showModal"
+			(confirmAction)="confirmarEliminacion($event)"
+		></app-confirm-modal>
+
+		<!-- Título -->
+		<h3>Lista de Asistentes</h3>
+
+		<!-- Controles de búsqueda y número de filas -->
+		<div class="d-flex align-items-center">
+			<div class="input-group me-3" style="width: 250px">
+				<input
+					type="text"
+					class="form-control"
+					placeholder="Buscar por nombre o email..."
+					[(ngModel)]="filtro"
+					(ngModelChange)="aplicarFiltro()"
+					aria-label="Buscar"
+				/>
+			</div>
+
+			<span class="me-2">Número de filas:</span>
+			<select
+				class="form-select"
+				[(ngModel)]="tamanoPagina"
+				(change)="actualizarTamanoPagina()"
+				aria-label="Número de filas por página"
+				style="width: 80px"
+			>
+				<option *ngFor="let option of opcionesFilas" [value]="option">
+					{{ option }}
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped mt-3">
+			<thead class="thead-dark">
+				<tr class="text-center">
+					<th
+						scope="col"
+						(click)="ordenarPor('nombre')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'nombre'
+						}"
+						style="cursor: pointer"
+					>
+						Nombre
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('domicilio')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'domicilio'
+						}"
+						style="cursor: pointer"
+					>
+						Domicilio
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('email')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'email'
+						}"
+						style="cursor: pointer"
+					>
+						Email
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('rol')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'rol'
+						}"
+						style="cursor: pointer"
+					>
+						Rol
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('estado')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'estado'
+						}"
+						style="cursor: pointer"
+					>
+						Estado
+					</th>
+					<th scope="col">Acciones</th>
+					<!-- Columna de acciones -->
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-center" *ngFor="let asistente of asistentes">
+					<td>{{ asistente.nombre }}</td>
+					<td>{{ asistente.domicilio }}</td>
+					<td>{{ asistente.email }}</td>
+					<td>{{ asistente.rol }}</td>
+					<td>{{ asistente.estado ? "Activo" : "Inactivo" }}</td>
+					<td>
+						<button
+							class="btn btn-sm btn-primary me-2"
+							title="Ver detalles"
+							(click)="editarAsistente(asistente)"
+						>
+							<i class="bi bi-eye"></i>
+						</button>
+						<button
+							title="Eliminar asistente"
+							class="btn btn-danger btn-sm"
+							(click)="eliminarAsistente(asistente)"
+						>
+							<i class="bi bi-trash"></i>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Mensaje cuando no hay asistentes -->
+	<div class="text-center" *ngIf="asistentes.length === 0">
+		<p class="text-muted">No hay asistentes disponibles</p>
+	</div>
+
+	<!-- Paginación -->
+	<nav *ngIf="totalPaginas > 1" aria-label="Paginación de asistentes">
+		<ul class="pagination justify-content-center">
+			<!-- Botón de página anterior -->
+			<li class="page-item" [ngClass]="{ disabled: paginaActual === 1 }">
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							paginaActual === 1 ? '#A5D6A7' : '#33691e',
+						color: paginaActual === 1 ? '#000000' : 'white'
+					}"
+					(click)="cambiarPagina(paginaActual - 1)"
+				>
+					<i class="bi bi-chevron-left"></i> Anterior
+				</button>
+			</li>
+
+			<!-- Botones de páginas -->
+			<li
+				*ngFor="let pagina of paginas"
+				class="page-item"
+				[ngClass]="{ active: pagina === paginaActual }"
+			>
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							pagina === paginaActual ? '#33691e' : '#A5D6A7',
+						color: pagina === paginaActual ? 'white' : 'gray'
+					}"
+					(click)="cambiarPagina(pagina)"
+				>
+					{{ pagina }}
+				</button>
+			</li>
+
+			<!-- Botón de página siguiente -->
+			<li
+				class="page-item"
+				[ngClass]="{ disabled: paginaActual === totalPaginas }"
+			>
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							paginaActual === totalPaginas
+								? '#A5D6A7'
+								: '#33691e',
+						color:
+							paginaActual === totalPaginas ? '#000000' : 'white'
+					}"
+					(click)="cambiarPagina(paginaActual + 1)"
+				>
+					Siguiente <i class="bi bi-chevron-right"></i>
+				</button>
+			</li>
+		</ul>
+	</nav>
+</div>

@@ -1,0 +1,111 @@
+<div class="container d-flex justify-content-center align-items-center mt-5">
+	<div class="card shadow-sm vw-100" style="width: 100%; max-width: 400px">
+		<div class="card-body">
+			<h4 class="card-title text-center mb-4" style="color: #33691e">
+				Iniciar sesión
+			</h4>
+
+			<!-- Mensaje de error -->
+			<div
+				*ngIf="errorMessage"
+				class="alert alert-danger mt-3 text-center"
+				role="alert"
+			>
+				{{ errorMessage }}
+			</div>
+
+			<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+				<!-- Email -->
+				<div class="form-floating mb-3">
+					<input
+						type="email"
+						class="form-control"
+						id="email floatingInput"
+						placeholder="Ingrese su email"
+						formControlName="email"
+						[ngClass]="{
+							'is-invalid':
+								loginForm.get('email')?.invalid &&
+								loginForm.get('email')?.touched
+						}"
+					/>
+					<label for="email" class="form-label" style="color: #33691e"
+						>Correo electrónico</label
+					>
+					<div
+						*ngIf="
+							loginForm.get('email')?.hasError('required') &&
+							loginForm.get('email')?.touched
+						"
+						class="invalid-feedback"
+					>
+						Este campo es obligatorio.
+					</div>
+					<div
+						*ngIf="
+							loginForm.get('email')?.hasError('email') &&
+							loginForm.get('email')?.touched
+						"
+						class="invalid-feedback"
+					>
+						Por favor, ingrese un correo electrónico válido.
+					</div>
+				</div>
+
+				<!-- Contraseña -->
+				<div class="form-floating mb-3">
+					<input
+						type="password"
+						class="form-control"
+						id="password"
+						placeholder="Ingrese su contraseña"
+						formControlName="password"
+						[ngClass]="{
+							'is-invalid':
+								loginForm.get('password')?.invalid &&
+								loginForm.get('password')?.touched
+						}"
+					/>
+					<label
+						for="password"
+						class="form-label"
+						style="color: #33691e"
+						>Contraseña</label
+					>
+					<div
+						*ngIf="
+							loginForm.get('password')?.hasError('required') ||
+							loginForm.get('password')?.touched
+						"
+						class="invalid-feedback"
+					>
+					La contraseña es obligatoria y debe tener al menos 6 caracteres.
+					</div>
+				</div>
+
+				<!-- Botón de inicio de sesión -->
+				<div class="d-grid gap-2 mb-3">
+					<button
+						type="submit"
+						class="btn"
+						[ngStyle]="{
+							backgroundColor: '#33691e',
+							color: 'white'
+						}"
+						[disabled]="loginForm.invalid"
+					>
+						Iniciar sesión
+					</button>
+				</div>
+
+				<!-- Enlace para recuperar la contraseña -->
+				<div class="text-center">
+					<p>¿Aún no tienes cuenta?</p>
+					<a href="/registrar" style="color: #8bc34a"
+						>Regístrate aquí</a
+					>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,226 @@
+<div
+	class="container d-flex justify-content-center align-items-center mt-4 mb-2"
+>
+	<div class="card shadow-sm" style="width: 500px; max-width: 800px">
+		<div class="card-body">
+			<h4 class="card-title text-center mb-1" style="color: #33691e">
+				{{ esModoEdicion ? "Editar evento" : "Detalles del evento" }}
+			</h4>
+			<!-- Alerta de mensaje -->
+			<div
+				*ngIf="mensaje"
+				[ngClass]="'alert alert-' + mensajeClase"
+				role="alert"
+			>
+				{{ mensaje }}
+			</div>
+
+			<!-- Formulario -->
+			<form [formGroup]="eventoForm" (ngSubmit)="onSubmit()">
+				<!-- Nombre Completo -->
+				<div class="mb-1">
+					<div>
+						<!-- Nombre del Evento -->
+						<label
+							for="nombre"
+							class="form-label"
+							style="color: #33691e"
+							>Nombre del Evento</label
+						>
+						<input
+							type="text"
+							class="form-control"
+							id="nombre"
+							[formControlName]="'nombre'"
+							[disabled]="!esModoEdicion"
+							[ngClass]="{
+								'is-invalid':
+									esModoEdicion &&
+									eventoForm.get('nombre')?.invalid &&
+									eventoForm.get('nombre')?.touched
+							}"
+						/>
+						<div
+							*ngIf="
+								eventoForm.get('nombre')?.invalid &&
+								eventoForm.get('nombre')?.touched
+							"
+							class="invalid-feedback"
+						>
+							<span
+								*ngIf="
+									eventoForm
+										.get('nombre')
+										?.hasError('required')
+								"
+								>El nombre es obligatorio.</span
+							>
+							<span
+								*ngIf="
+									eventoForm
+										.get('nombre')
+										?.hasError('minlength')
+								"
+								>Debe tener al menos 5 caracteres.</span
+							>
+						</div>
+					</div>
+
+					<!-- Fecha del Evento -->
+					<div class="mb-1">
+						<label
+							for="fecha"
+							class="form-label"
+							style="color: #33691e"
+							>Fecha del Evento</label
+						>
+						<input
+							type="date"
+							class="form-control"
+							id="fecha"
+							[formControlName]="'fecha'"
+							[disabled]="!esModoEdicion"
+							[ngClass]="{
+								'is-invalid':
+									esModoEdicion &&
+									eventoForm.get('fecha')?.invalid &&
+									eventoForm.get('fecha')?.touched
+							}"
+						/>
+						<div
+							*ngIf="
+								eventoForm.get('fecha')?.invalid &&
+								eventoForm.get('fecha')?.touched
+							"
+							class="invalid-feedback"
+						>
+							<span
+								*ngIf="
+									eventoForm
+										.get('fecha')
+										?.hasError('required')
+								"
+								>La fecha es obligatoria.</span
+							>
+							<span
+								*ngIf="
+									eventoForm
+										.get('fecha')
+										?.hasError('fechaInvalida')
+								"
+								>La fecha debe ser superior a la fecha
+								actual.</span
+							>
+						</div>
+					</div>
+
+					<!-- Ubicación del Evento -->
+					<div class="mb-1">
+						<label
+							for="ubicacion"
+							class="form-label"
+							style="color: #33691e"
+							>Ubicación</label
+						>
+						<input
+							type="text"
+							class="form-control"
+							id="ubicacion"
+							[formControlName]="'ubicacion'"
+							[disabled]="!esModoEdicion"
+							[ngClass]="{
+								'is-invalid':
+									esModoEdicion &&
+									eventoForm.get('ubicacion')?.invalid &&
+									eventoForm.get('ubicacion')?.touched
+							}"
+						/>
+						<div
+							*ngIf="
+								eventoForm.get('ubicacion')?.invalid &&
+								eventoForm.get('ubicacion')?.touched
+							"
+							class="invalid-feedback"
+						>
+							<span
+								*ngIf="
+									eventoForm
+										.get('ubicacion')
+										?.hasError('required')
+								"
+								>La ubicación es obligatoria.</span
+							>
+							<span
+								*ngIf="
+									eventoForm
+										.get('ubicacion')
+										?.hasError('minlength')
+								"
+								>Debe tener al menos 3 caracteres.</span
+							>
+						</div>
+					</div>
+
+					<!-- Descripción del Evento -->
+					<div class="mb-1">
+						<label
+							for="descripcion"
+							class="form-label"
+							style="color: #33691e"
+							>Descripción</label
+						>
+						<textarea
+							class="form-control"
+							id="descripcion"
+							rows="3"
+							[formControlName]="'descripcion'"
+							[disabled]="!esModoEdicion"
+							[ngClass]="{
+								'is-invalid':
+									esModoEdicion &&
+									eventoForm.get('descripcion')?.invalid &&
+									eventoForm.get('descripcion')?.touched
+							}"
+						></textarea>
+						<div
+							*ngIf="
+								eventoForm.get('descripcion')?.invalid &&
+								eventoForm.get('descripcion')?.touched
+							"
+							class="invalid-feedback"
+						>
+							La descripción es obligatoria.
+						</div>
+					</div>
+
+					<!-- Botones -->
+					<div class="d-flex justify-content-center gap-4 mt-3">
+						<button
+							*ngIf="!esModoEdicion"
+							type="button"
+							class="btn btn-warning"
+							(click)="editar()"
+						>
+							Editar
+						</button>
+						<button
+							*ngIf="esModoEdicion"
+							type="submit"
+							class="btn btn-success"
+							[disabled]="eventoForm.invalid"
+						>
+							Guardar Cambios
+						</button>
+						<button
+							type="button"
+							class="btn btn-secondary"
+							(click)="volver()"
+						>
+							{{ esModoEdicion ? "Cancelar" : "Volver" }}
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

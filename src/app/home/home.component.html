@@ -1,0 +1,65 @@
+<div
+	class="container-fluid d-flex justify-content-center align-items-center mt-5"
+>
+	<div class="container">
+		<ng-container *ngIf="isLoading; else content">
+			<!-- Spinner de carga -->
+			<div class="d-flex justify-content-center">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Cargando...</span>
+				</div>
+			</div>
+		</ng-container>
+
+		<ng-template #content>
+			<!-- Mostrar contenido solo después de que isLoading sea falso -->
+			<div *ngIf="!isLoggedIn; else loggedInTemplate">
+				<!-- Vista cuando el usuario no está logueado -->
+				<div class="alert alert-info text-center">
+					<h3>¡Bienvenido! Por favor, inicia sesión o regístrate.</h3>
+					<p>
+						Si ya tienes una cuenta,
+						<a href="/login" style="color: #407900;">Inicia sesión</a>
+					</p>
+					<p>
+						Si no tienes cuenta,
+						<a href="/registrar"  style="color: #407900;">Regístrate aquí</a>
+					</p>
+				</div>
+			</div>
+
+			<!-- Vista cuando el usuario está logueado -->
+			<ng-template #loggedInTemplate>
+				<h1 class="text-center mb-4" style="color: #4CAF50;">Bienvenido a la Gestión de Eventos</h1>
+			
+				<div class="row row-cols-1 justify-content-center row-cols-md-3 g-4">
+				  <div class="col">
+					<div class="card shadow-sm" style="border-top: 5px solid #4CAF50;">
+					  <div class="card-body">
+						<h5 class="card-title" style="color: #CDDC39;">Eventos Programados</h5>
+						<p class="card-text" style="font-size: 1.2rem;">Actualmente tenemos <strong>15 eventos</strong> programados para este año.</p>
+						<a href="/eventos" class="btn" style="background-color: #4CAF50; color: white;">Ver Eventos</a>
+					  </div>
+					</div>
+				  </div>
+			
+				  <div class="col">
+					<div class="card shadow-sm" style="border-top: 5px solid #4CAF50;">
+					  <div class="card-body">
+						<h5 class="card-title" style="color: #CDDC39;">Próximos Eventos</h5>
+						<ul class="list-unstyled">
+						  <li><strong>Conferencia de Tecnología</strong> - 10 de diciembre de 2024 - <i>Auditorio A</i></li>
+						  <li><strong>Seminario de Marketing</strong> - 20 de diciembre de 2024 - <i>Salón de Eventos</i></li>
+						  <li><strong>Gira Cultural</strong> - 5 de enero de 2025 - <i>Plaza Central</i></li>
+						</ul>
+						<a href="/eventos" class="btn" style="background-color: #4CAF50; color: white;">Ver Todos</a>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			  </ng-template>
+		</ng-template>
+		<!-- Mensaje de error si hay algún problema al cargar los datos -->
+
+	</div>
+</div>

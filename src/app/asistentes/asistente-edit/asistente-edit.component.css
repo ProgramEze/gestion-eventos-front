@@ -1,0 +1,106 @@
+/* Estilo general para el contenedor de la página */
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+  }
+  
+  h2 {
+	text-align: center;
+	margin-bottom: 20px;
+  }
+  
+  /* Estilo para el formulario */
+  .form-group {
+	margin-bottom: 15px;
+  }
+  
+  label {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 5px;
+  }
+  
+  input,
+  select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	background-color: #fff;
+  }
+  
+  input:disabled,
+  select:disabled {
+	background-color: #e9ecef;
+	cursor: not-allowed;
+  }
+  
+  input:focus,
+  select:focus {
+	outline: none;
+	border-color: #007bff;
+  }
+  
+  .is-invalid {
+	border-color: #e74c3c;
+  }
+  
+  .invalid-feedback {
+	font-size: 0.875rem;
+	color: #e74c3c;
+	margin-top: 5px;
+  }
+  
+  /* Estilo para los botones */
+  .button-container {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 20px;
+  }
+  
+  button {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+  }
+  
+  button.btn-primary {
+	background-color: #007bff;
+	color: white;
+  }
+  
+  button.btn-primary:hover {
+	background-color: #0056b3;
+  }
+  
+  button.btn-secondary {
+	background-color: #6c757d;
+	color: white;
+  }
+  
+  button.btn-secondary:hover {
+	background-color: #5a6268;
+  }
+  
+  /* Estilo para el mensaje de alerta */
+  .alert {
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 20px;
+	font-weight: bold;
+	text-align: center;
+  }
+  
+  .success {
+	background-color: #d4edda;
+	color: #155724;
+  }
+  
+  .error {
+	background-color: #f8d7da;
+	color: #721c24;
+  }
+  

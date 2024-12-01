@@ -1,0 +1,180 @@
+<div class="container mt-1">
+	<h2 class="mb-3">
+		{{ esModoEdicion ? "Editar Asistente" : "Detalles del Asistente" }}
+	</h2>
+
+	<!-- Alerta de mensaje -->
+	<div *ngIf="mensaje" [ngClass]="'alert alert-' + mensajeClase" role="alert">
+		{{ mensaje }}
+	</div>
+
+	<!-- Formulario -->
+	<form [formGroup]="asistenteForm" (ngSubmit)="onSubmit()">
+		<!-- Nombre Completo -->
+		<div class="mb-1">
+			<label for="nombre" class="form-label" style="color: #33691e"
+				>Nombre Completo</label
+			>
+			<input
+				type="text"
+				class="form-control"
+				id="nombre"
+				formControlName="nombre"
+				[ngClass]="{
+					'is-invalid':
+						asistenteForm.get('nombre')?.invalid &&
+						asistenteForm.get('nombre')?.touched
+				}"
+			/>
+			<div
+				*ngIf="
+					asistenteForm.get('nombre')?.hasError('required') &&
+					asistenteForm.get('nombre')?.touched
+				"
+				class="invalid-feedback"
+			>
+				Este campo es obligatorio.
+			</div>
+			<div
+				*ngIf="
+				   !asistenteForm.get('nombre')?.hasError('noNumbers') &&
+					asistenteForm.get('nombre')?.hasError('minlength') &&
+					asistenteForm.get('nombre')?.touched
+				"
+				class="invalid-feedback"
+			>
+				Debe ingresar como minimo 6 caracteres.
+			</div>
+			<div
+				*ngIf="
+					asistenteForm.get('nombre')?.hasError('noNumbers') &&
+					asistenteForm.get('nombre')?.touched
+				"
+				class="invalid-feedback"
+			>
+				El nombre no puede contener números.
+			</div>
+		</div>
+
+		<!-- Domicilio -->
+		<div class="mb-1">
+			<label for="domicilio" class="form-label" style="color: #33691e"
+				>Domicilio</label
+			>
+			<input
+				type="text"
+				class="form-control"
+				id="domicilio"
+				formControlName="domicilio"
+				[ngClass]="{
+					'is-invalid':
+						asistenteForm.get('domicilio')?.invalid &&
+						asistenteForm.get('domicilio')?.touched
+				}"
+				autocomplete="street-address"
+			/>
+			<div
+				*ngIf="
+					asistenteForm.get('nombre')?.hasError('minlength') &&
+					asistenteForm.get('nombre')?.touched
+				"
+				class="invalid-feedback"
+			>
+				Debe ingresar como minimo 10 caracteres.
+			</div>
+			<div
+				*ngIf="
+					asistenteForm.get('domicilio')?.invalid &&
+					asistenteForm.get('domicilio')?.touched
+				"
+				class="invalid-feedback"
+			>
+				Este campo es obligatorio.
+			</div>
+		</div>
+
+		<!-- Email -->
+		<div class="mb-1">
+			<label for="email" class="form-label" style="color: #33691e"
+				>Email</label
+			>
+			<input
+				type="email"
+				class="form-control"
+				id="email"
+				formControlName="email"
+				[disabled]="!esModoEdicion"
+				[ngClass]="{
+					'is-invalid':
+						asistenteForm.get('email')?.invalid &&
+						asistenteForm.get('email')?.touched
+				}"
+				autocomplete="email"
+			/>
+			<div
+				*ngIf="
+					asistenteForm.get('email')?.invalid &&
+					asistenteForm.get('email')?.touched
+				"
+				class="invalid-feedback"
+			>
+				Por favor, ingresa un correo electrónico válido.
+			</div>
+		</div>
+
+		<!-- Rol -->
+		<div class="mb-3">
+			<label for="rol" class="form-label" style="color: #33691e"
+				>Rol</label
+			>
+			<select
+				id="rol"
+				class="form-select"
+				formControlName="rol"
+				[disabled]="!esModoEdicion"
+			>
+				<option value="Asistente">Asistente</option>
+				<option value="Organizador">Organizador</option>
+			</select>
+		</div>
+
+		<!-- Estado -->
+		<div class="mb-3">
+			<label for="estado" class="form-label" style="color: #33691e"
+				>Estado</label
+			>
+			<select
+				id="estado"
+				class="form-select"
+				formControlName="estado"
+				[disabled]="!esModoEdicion"
+			>
+				<option [value]="true">Activo</option>
+				<option [value]="false">Inactivo</option>
+			</select>
+		</div>
+
+		<!-- Botones -->
+		<div class="d-flex justify-content-center gap-4 mt-3">
+			<button
+				*ngIf="!esModoEdicion"
+				type="button"
+				class="btn btn-warning"
+				(click)="editar()"
+			>
+				Editar
+			</button>
+			<button
+				*ngIf="esModoEdicion"
+				type="submit"
+				class="btn btn-success"
+				[disabled]="asistenteForm.invalid"
+			>
+				Guardar Cambios
+			</button>
+			<button type="button" class="btn btn-secondary" (click)="volver()">
+				{{ esModoEdicion ? "Cancelar" : "Volver" }}
+			</button>
+		</div>
+	</form>
+</div>

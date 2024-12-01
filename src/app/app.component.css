@@ -1,0 +1,20 @@
+/* Navbar */
+.navbar-nav .nav-item {
+	white-space: nowrap; /* No permitir que los enlaces se dividan en líneas múltiples */
+  }
+  
+  .navbar-toggler {
+	border: none;
+  }
+  
+  /* Ajuste de colapsado en pantallas pequeñas */
+  @media (max-width: 991.98px) {
+	.navbar-nav {
+	  text-align: center; /* Centra los elementos en pantallas pequeñas */
+	  width: 100%; /* Asegura que el contenido se mantenga dentro */
+	}
+	.navbar-nav.ms-auto {
+	  justify-content: center;
+	}
+  }
+  

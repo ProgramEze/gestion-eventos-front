@@ -1,0 +1,217 @@
+<!-- participacion-por-evento-list.component.html -->
+<div class="container mt-5" style="width: 800px">
+	<app-confirm-modal
+		*ngIf="showModal"
+		[message]="message"
+		[showModal]="showModal"
+		(confirmAction)="confirmarEliminacion($event)"
+	></app-confirm-modal>
+	<div class="evento-info d-flex justify-content-center align-items-center">
+		<h2>{{ evento?.nombre }}</h2>
+	</div>
+	<!-- Fila de título y controles -->
+	<div class="d-flex justify-content-between mb-2 align-items-center ">
+		<!-- Controles de búsqueda y número de filas -->
+		<div class="d-flex align-items-center">
+			<div class="input-group me-auto" style="width: 250px">
+				<input
+					type="text"
+					class="form-control"
+					placeholder="Buscar por nombre o email..."
+					[(ngModel)]="filtro"
+					(ngModelChange)="aplicarFiltro()"
+					aria-label="Buscar"
+				/>
+			</div>
+		</div>
+
+		<div class="ms-auto d-flex align-items-center">
+			<span>Número de filas:</span>
+			<select
+				class="form-select"
+				[(ngModel)]="tamanoPagina"
+				(change)="actualizarTamanoPagina()"
+				aria-label="Número de filas por página"
+				style="width: 80px"
+			>
+				<option *ngFor="let option of opcionesFilas" [value]="option">
+					{{ option }}
+				</option>
+			</select>
+		</div>
+	</div>
+
+	<!-- Lista de participaciones -->
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr class="text-center">
+					<th
+						scope="col"
+						(click)="ordenarPor('asistente')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'asistente'
+						}"
+						style="cursor: pointer"
+					>
+						Nombre
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('asistente')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'asistente'
+						}"
+						style="cursor: pointer"
+					>
+						Domicilio
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('asistente')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'asistente'
+						}"
+						style="cursor: pointer"
+					>
+						Email
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('asistente')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'asistente'
+						}"
+						style="cursor: pointer"
+					>
+						Rol
+					</th>
+					<th
+						scope="col"
+						(click)="ordenarPor('asistente')"
+						[ngClass]="{
+							'text-primary': columnaOrdenada === 'asistente'
+						}"
+						style="cursor: pointer"
+					>
+						Estado
+					</th>
+					<th scope="col">Acciones</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr
+					class="text-center"
+					*ngFor="let participante of participaciones"
+				>
+					<td>{{ participante.Asistente?.nombre }}</td>
+					<td>{{ participante.Asistente?.domicilio }}</td>
+					<td>{{ participante.Asistente?.email }}</td>
+					<td>{{ participante.Asistente?.rol }}</td>
+					<td>
+						<span *ngIf="fechaActual"> Pendiente </span>
+						<span *ngIf="!fechaActual">
+							{{
+								participante.confirmacion
+									? "Asistió"
+									: "No asistió"
+							}}
+						</span>
+					</td>
+					<td>
+						<button
+							class="btn btn-sm btn-primary me-2"
+							title="Ver detalles"
+							(click)="
+								editarParticipacion(
+									participante.idParticipacion
+								)
+							"
+						>
+							<i class="bi bi-eye"></i>
+						</button>
+						<button
+							title="Eliminar participante"
+							class="btn btn-danger btn-sm"
+							(click)="eliminarParticipacion(participante)"
+						>
+							<i class="bi bi-trash"></i>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Mensaje cuando no hay asistentes -->
+	<div class="text-center" *ngIf="participaciones.length === 0">
+		<h3>No hay asistentes registrados</h3>
+		<p class="text-muted" *ngIf="fechaActual">
+			Nadie se ha unido al evento aún
+		</p>
+		<p class="text-muted" *ngIf="fechaActual">
+			Nadie ha participado del evento
+		</p>
+	</div>
+
+	<!-- Paginación -->
+	<nav *ngIf="totalPaginas > 1" aria-label="Paginación de asistentes">
+		<ul class="pagination justify-content-center">
+			<!-- Botón de página anterior -->
+			<li class="page-item" [ngClass]="{ disabled: paginaActual === 1 }">
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							paginaActual === 1 ? '#A5D6A7' : '#33691e',
+						color: paginaActual === 1 ? '#000000' : 'white'
+					}"
+					(click)="cambiarPagina(paginaActual - 1)"
+				>
+					<i class="bi bi-chevron-left"></i> Anterior
+				</button>
+			</li>
+
+			<!-- Botones de páginas -->
+			<li
+				*ngFor="let pagina of paginas"
+				class="page-item"
+				[ngClass]="{ active: pagina === paginaActual }"
+			>
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							pagina === paginaActual ? '#33691e' : '#A5D6A7',
+						color: pagina === paginaActual ? 'white' : 'gray'
+					}"
+					(click)="cambiarPagina(pagina)"
+				>
+					{{ pagina }}
+				</button>
+			</li>
+
+			<!-- Botón de página siguiente -->
+			<li
+				class="page-item"
+				[ngClass]="{ disabled: paginaActual === totalPaginas }"
+			>
+				<button
+					class="page-link btn btn-sm btn-outline-primary me-2"
+					[ngStyle]="{
+						backgroundColor:
+							paginaActual === totalPaginas
+								? '#A5D6A7'
+								: '#33691e',
+						color:
+							paginaActual === totalPaginas ? '#000000' : 'white'
+					}"
+					(click)="cambiarPagina(paginaActual + 1)"
+				>
+					Siguiente <i class="bi bi-chevron-right"></i>
+				</button>
+			</li>
+		</ul>
+	</nav>
+</div>
