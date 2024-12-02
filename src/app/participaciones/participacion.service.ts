@@ -17,9 +17,12 @@ export class ParticipacionService {
 	constructor(private http: HttpClient) {}
 
 	// Crear una nueva participación
-	crearParticipacion(participacion: Participacion): Observable<any> {
-		return this.http.post(`${this.apiUrl}/`, participacion, {
-			withCredentials: true,
+	crearParticipacion(participacion: {
+		idAsistente: number;
+		idEvento: number;
+	}): Observable<any> {
+		return this.http.post(this.apiUrl, participacion, {
+			withCredentials: true, // Si necesitas enviar cookies o credenciales
 		});
 	}
 
@@ -37,10 +40,13 @@ export class ParticipacionService {
 			.set('filtro', filtro);
 
 		// Realizar la solicitud GET al backend
-		return this.http.get<ParticipacionResponse>(`${this.apiUrl}/evento/${idEvento}`, {
-			params,
-			withCredentials: true,
-		});
+		return this.http.get<ParticipacionResponse>(
+			`${this.apiUrl}/evento/${idEvento}`,
+			{
+				params,
+				withCredentials: true,
+			}
+		);
 	}
 
 	// Obtener participaciones por asistente

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -30,7 +30,7 @@ if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
 	(globalThis as any).sessionStorage = new MockStorage();
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: 'root'})
 export class LoginService {
 	private baseUrl = 'http://localhost:5000';
 	private loggedInSubject = new BehaviorSubject<boolean>(false);

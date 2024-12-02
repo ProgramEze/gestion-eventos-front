@@ -1,97 +1,110 @@
-<div class="container">
+<div class="container" style="width: 1200px">
 	<div class="mb-1">
+		<!-- Modal de confirmación -->
 		<app-confirm-modal
 			*ngIf="showModal"
 			[message]="message"
 			[showModal]="showModal"
 			(confirmAction)="confirmarEliminacion($event)"
 		></app-confirm-modal>
-		<h2 class="text-center mt-1">Listado de Eventos</h2>
-		<!-- Filtro de búsqueda -->
-		<div class="d-flex align-items-center">
-			<div class="container">
-				<!-- Fila de botones y filtros, divididos en dos partes -->
-				<div class="d-flex justify-content-between">
-					<!-- Columna izquierda (botón y filtros por fecha) -->
-					<div class="d-flex align-items-center flex-column">
-						<!-- Botón para crear nuevo evento -->
-						<button
-							*ngIf="isOrganizer"
-							class="btn btn-success me-auto w-auto mb-2"
-							[routerLink]="['/eventos/create']"
-						>
-							Crear Nuevo Evento
-						</button>
 
-						<!-- Filtros por fecha -->
-						<span class="me-auto">Buscar eventos por fecha:</span>
-						<div class="d-flex mb-2">
-							<div
-								class="input-group align-items-center me-3"
-								style="width: 250px"
-							>
-								<span class="me-1">Desde:</span>
-								<input
-									type="date"
-									class="form-control"
-									[(ngModel)]="fechaInicio"
-									(ngModelChange)="aplicarFiltro()"
-									aria-label="Fecha de inicio"
-									placeholder="Fecha de inicio"
-								/>
-							</div>
-							<div
-								class="input-group align-items-center me-3"
-								style="width: 250px"
-							>
-								<span class="me-3">Hasta:</span>
-								<input
-									type="date"
-									class="form-control"
-									[(ngModel)]="fechaFin"
-									(ngModelChange)="aplicarFiltro()"
-									aria-label="Fecha de fin"
-									placeholder="Fecha de fin"
-								/>
-							</div>
-						</div>
+		<!-- Título principal -->
+		<h2 class="text-center mt-1">Listado de Eventos</h2>
+
+		<!-- Contenedor principal -->
+		<div class="container mt-3">
+			<!-- Fila principal: Botón y filtros en la izquierda, búsqueda y selector de filas en la derecha -->
+			<div class="d-flex justify-content-between">
+				<!-- Columna izquierda: Botón de crear evento y filtros -->
+				<div class="d-flex flex-column align-items-start">
+					<!-- Botón para crear nuevo evento -->
+					<button
+						*ngIf="isOrganizer"
+						class="btn btn-success w-auto mb-3"
+						[routerLink]="['/eventos/create']"
+					>
+						Crear Nuevo Evento
+					</button>
+
+					<!-- Menú desplegable para filtrar eventos -->
+					<div class="input-group d-flex align-items-center mb-3" style="width: 400px">
+						<label for="filtroEventos" class="me-2"
+							>Filtrar eventos:</label
+						>
+						<select
+							id="filtroEventos"
+							class="form-select"
+							[(ngModel)]="filtroEventos"
+							(change)="cambiarFiltro()"
+						>
+							<option value="todos">Todos los eventos</option>
+							<option value="participo">
+								Eventos en los que participo
+							</option>
+							<option value="noParticipo">
+								Eventos en los que no participo
+							</option>
+						</select>
 					</div>
 
-					<!-- Columna derecha (buscador y select de cantidad de filas) -->
-					<div
-						class="d-flex flex-column justify-content-end align-items-end"
-						style="width: 45%"
-					>
-						<!-- Filtro de búsqueda por nombre -->
-						<div class="input-group mb-2" style="width: 400px">
+					<!-- Filtros por fecha -->
+					<div class="d-flex mb-2">
+						<div class="input-group align-items-center" style="width: 250px">
+							<span class="me-2">Desde:</span>
 							<input
-								type="text"
+								type="date"
 								class="form-control"
-								placeholder="Buscar por nombre, ubicación o descripción..."
-								[(ngModel)]="filtro"
+								[(ngModel)]="fechaInicio"
 								(ngModelChange)="aplicarFiltro()"
-								aria-label="Buscar"
+								aria-label="Fecha de inicio"
 							/>
 						</div>
-
-						<!-- Selector de número de filas -->
-						<div class="d-flex align-items-center">
-							<span class="me-2">Número de filas:</span>
-							<select
-								class="form-select"
-								[(ngModel)]="tamanoPagina"
-								(change)="actualizarTamanoPagina()"
-								aria-label="Número de filas por página"
-								style="width: 80px"
-							>
-								<option
-									*ngFor="let option of opcionesFilas"
-									[value]="option"
-								>
-									{{ option }}
-								</option>
-							</select>
+						<div class="input-group align-items-center" style="width: 250px">
+							<span class="me-2 ms-2">Hasta:</span>
+							<input
+								type="date"
+								class="form-control"
+								[(ngModel)]="fechaFin"
+								(ngModelChange)="aplicarFiltro()"
+								aria-label="Fecha de fin"
+							/>
 						</div>
+					</div>
+				</div>
+
+				<!-- Columna derecha: Búsqueda y selector de número de filas -->
+				<div
+					class="d-flex flex-column justify-content-end mb-2 align-items-end"
+					style="width: 45%"
+				>
+					<!-- Filtro de búsqueda por nombre, ubicación o descripción -->
+					<div class="input-group mb-3" style="width: 400px">
+						<input
+							type="text"
+							class="form-control"
+							placeholder="Buscar por nombre, ubicación o descripción..."
+							[(ngModel)]="filtro"
+							(ngModelChange)="aplicarFiltro()"
+							aria-label="Buscar"
+						/>
+					</div>
+
+					<!-- Selector de número de filas por página -->
+					<div class="d-flex align-items-center">
+						<span class="me-2">Número de filas:</span>
+						<select
+							class="form-select"
+							[(ngModel)]="tamanoPagina"
+							(change)="actualizarTamanoPagina()"
+							style="width: 80px"
+						>
+							<option
+								*ngFor="let option of opcionesFilas"
+								[value]="option"
+							>
+								{{ option }}
+							</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -164,7 +177,7 @@
 							<button
 								class="btn btn-sm btn-primary me-2"
 								title="Ver detalles"
-								(click)="editarEvento(evento.idEvento)"
+								(click)="unirseAEvento(evento.idEvento)"
 							>
 								<i class="bi bi-chevron-left"></i>
 							</button>

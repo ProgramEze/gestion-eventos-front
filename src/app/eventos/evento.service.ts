@@ -12,7 +12,7 @@ export class EventoService {
 	// Crea un nuevo evento
 	crearEvento(evento: Evento): Observable<any> {
 		console.log(evento);
-		
+
 		return this.http.post<any>(this.baseUrl, evento, {
 			withCredentials: true,
 		});
@@ -24,7 +24,7 @@ export class EventoService {
 		tamanoPagina: number = 5,
 		filtro: string = '',
 		fechaInicio: string = '',
-        fechaFin: string = ''
+		fechaFin: string = ''
 	): Observable<any> {
 		// Transformamos los nombres de los parámetros para que coincidan con lo que espera el backend
 		let params = new HttpParams()
@@ -34,7 +34,6 @@ export class EventoService {
 			.set('fechaInicio', fechaInicio.toString())
 			.set('fechaFin', fechaFin.toString());
 
-
 		return this.http
 			.get<any>(`${this.baseUrl}`, { params, withCredentials: true })
 			.pipe(
@@ -42,6 +41,46 @@ export class EventoService {
 					throw err;
 				})
 			);
+	}
+
+	getEventosParticipo(
+		page: number = 1,
+		limit: number = 10,
+		search: string = '',
+		fechaInicio: string = '',
+		fechaFin: string = ''
+	): Observable<any> {
+		const params = {
+			pagina: page.toString(),
+			tamanoPagina: limit.toString(),
+			filtro: search,
+			fechaInicio: fechaInicio,
+            fechaFin: fechaFin,
+		};
+		return this.http.get<any>(`${this.baseUrl}/participo`, {
+			params,
+			withCredentials: true,
+		});
+	}
+
+	getEventosNoParticipo(
+		page: number = 1,
+		limit: number = 10,
+		search: string = '',
+		fechaInicio: string = '',
+		fechaFin: string = ''
+	): Observable<any> {
+		const params = {
+			pagina: page.toString(),
+			tamanoPagina: limit.toString(),
+			filtro: search,
+			fechaInicio: fechaInicio,
+            fechaFin: fechaFin,
+		};
+		return this.http.get<any>(`${this.baseUrl}/no-participo`, {
+			params,
+			withCredentials: true,
+		});
 	}
 
 	// Método para obtener eventos futuros con paginación y filtro

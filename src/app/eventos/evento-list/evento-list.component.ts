@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+import { ParticipacionService } from '../../participaciones/participacion.service';
 
 @Component({
 	selector: 'app-evento-list',
@@ -18,6 +19,7 @@ import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.
 })
 export class EventoListComponent implements OnInit {
 	eventos: Evento[] = [];
+	filtroEventos: string = 'todos'; // Valor inicial: mostrar todos los eventos
 	filtro: string = '';
 	fechaInicio: string = '';
 	fechaFin: string = '';
@@ -27,15 +29,18 @@ export class EventoListComponent implements OnInit {
 	paginas: number[] = [];
 	opcionesFilas: number[] = [5, 10, 15, 20, 25, 50, 100];
 	isOrganizer: boolean = false;
+	
 	direccionOrden: string = 'asc'; // Dirección del orden (ascendente/descendente)
 	columnaOrdenada: keyof Evento = 'nombre';
 	ordenAscendente: boolean = true;
+	
 	showModal: boolean = false; // Modal inicialmente cerrado
 	message: string = '';
 	eventoSeleccionado: Evento | null = null;
 
 	constructor(
 		private eventoService: EventoService,
+		private participacionService: ParticipacionService,
 		private loginService: LoginService,
 		private router: Router
 	) {}
@@ -44,6 +49,66 @@ export class EventoListComponent implements OnInit {
 		this.isOrganizer = this.loginService.isRoleIn() == 'Organizador';
 		this.cargarEventos();
 	}
+
+	cambiarFiltro(): void {
+        this.paginaActual = 1; // Reiniciar la paginación al cambiar el filtro
+        this.cargarEventos();
+    }
+
+    cargarEventos(): void {
+        if (this.filtroEventos === 'participo') {
+            this.cargarEventosParticipo();
+        } else if (this.filtroEventos === 'noParticipo') {
+            this.cargarEventosNoParticipo();
+        } else {
+            this.cargarTodosLosEventos();
+        }
+    }
+
+    cargarTodosLosEventos(): void {
+        this.eventoService
+            .getEventos(this.paginaActual, this.tamanoPagina, this.filtro, this.fechaInicio, this.fechaFin)
+            .subscribe((response: any) => {
+                this.eventos = response.eventos;
+                this.totalPaginas = response.totalPaginas;
+                this.generarPaginacion();
+            });
+    }
+
+    cargarEventosParticipo(): void {
+        this.eventoService
+            .getEventosParticipo(this.paginaActual, this.tamanoPagina, this.filtro, this.fechaInicio, this.fechaFin)
+            .subscribe((response: any) => {
+                this.eventos = response.eventos;
+                this.totalPaginas = response.totalPaginas;
+                this.generarPaginacion();
+            });
+    }
+
+    cargarEventosNoParticipo(): void {
+        this.eventoService
+            .getEventosNoParticipo(this.paginaActual, this.tamanoPagina, this.filtro, this.fechaInicio, this.fechaFin)
+            .subscribe((response: any) => {
+                this.eventos = response.eventos;
+                this.totalPaginas = response.totalPaginas;
+                this.generarPaginacion();
+            });
+    }
+
+    generarPaginacion(): void {
+        const paginas: number[] = [];
+        for (let i = 1; i <= this.totalPaginas; i++) {
+            paginas.push(i);
+        }
+        this.paginas = paginas;
+    }
+
+    cambiarPagina(pagina: number): void {
+        if (pagina >= 1 && pagina <= this.totalPaginas) {
+            this.paginaActual = pagina;
+            this.cargarEventos();
+        }
+    }
 
 	// Función para formatear las fechas en el formato deseado
 	formatearFecha(fecha: string): string {
@@ -67,40 +132,6 @@ export class EventoListComponent implements OnInit {
 
 		// Unir las partes de nuevo
 		return partes.join(' ');
-	}
-
-	cargarEventos(): void {
-		this.eventoService
-			.getEventos(
-				this.paginaActual,
-				this.tamanoPagina,
-				this.filtro,
-				this.fechaInicio,
-				this.fechaFin
-			)
-			.subscribe((response: any) => {
-				console.log(response.eventos);
-				this.eventos = response.eventos;
-				this.totalPaginas = response.totalPaginas;
-				this.generarPaginacion();
-			});
-	}
-
-	// Función para cambiar de página
-	cambiarPagina(pagina: number): void {
-		if (pagina >= 1 && pagina <= this.totalPaginas) {
-			this.paginaActual = pagina;
-			this.cargarEventos();
-		}
-	}
-
-	// Generar la lista de páginas
-	generarPaginacion(): void {
-		const paginas: number[] = [];
-		for (let i = 1; i <= this.totalPaginas; i++) {
-			paginas.push(i);
-		}
-		this.paginas = paginas;
 	}
 
 	// Función para aplicar el filtro y cargar los eventos
@@ -160,6 +191,28 @@ export class EventoListComponent implements OnInit {
 			}
 			return 0;
 		});
+	}
+
+	unirseAEvento(idEvento: number) {
+		const idAsistente = sessionStorage.getItem('idAsistente');
+		if (idAsistente !== null) {
+			this.participacionService
+				.crearParticipacion({
+					idAsistente: parseInt(idAsistente),
+					idEvento,
+				})
+				.subscribe({
+					next: (response) => {
+						console.log(response.message); // "¡Participación registrada exitosamente!"
+					},
+					error: (err) => {
+						console.error(err.error); // Manejo de errores
+					},
+				});
+		} else {
+			// Handle the case when the value is null
+			console.log('idAsistente is null');
+		}
 	}
 
 	verParticipaciones(id: number): void {

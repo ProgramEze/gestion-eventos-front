@@ -1,5 +1,5 @@
 <!-- participacion-por-evento-list.component.html -->
-<div class="container mt-5" style="width: 800px">
+<div class="container mt-5" style="width: 1200px">
 	<app-confirm-modal
 		*ngIf="showModal"
 		[message]="message"
@@ -7,17 +7,18 @@
 		(confirmAction)="confirmarEliminacion($event)"
 	></app-confirm-modal>
 	<div class="evento-info d-flex justify-content-center align-items-center">
-		<h2>{{ evento?.nombre }}</h2>
+		<h2> {{ evento?.nombre }} </h2>
+		<!-- Updated line -->
 	</div>
 	<!-- Fila de título y controles -->
-	<div class="d-flex justify-content-between mb-2 align-items-center ">
+	<div class="d-flex justify-content-between mb-2 align-items-center">
 		<!-- Controles de búsqueda y número de filas -->
 		<div class="d-flex align-items-center">
-			<div class="input-group me-auto" style="width: 250px">
+			<div class="input-group me-auto" style="width: 255px">
 				<input
 					type="text"
 					class="form-control"
-					placeholder="Buscar por nombre o email..."
+					placeholder="Buscar por nombre, email o rol..."
 					[(ngModel)]="filtro"
 					(ngModelChange)="aplicarFiltro()"
 					aria-label="Buscar"
@@ -48,9 +49,9 @@
 				<tr class="text-center">
 					<th
 						scope="col"
-						(click)="ordenarPor('asistente')"
+						(click)="ordenarPor('nombre')"
 						[ngClass]="{
-							'text-primary': columnaOrdenada === 'asistente'
+							'text-primary': columnaOrdenada === 'nombre'
 						}"
 						style="cursor: pointer"
 					>
@@ -58,9 +59,9 @@
 					</th>
 					<th
 						scope="col"
-						(click)="ordenarPor('asistente')"
+						(click)="ordenarPor('domicilio')"
 						[ngClass]="{
-							'text-primary': columnaOrdenada === 'asistente'
+							'text-primary': columnaOrdenada === 'domicilio'
 						}"
 						style="cursor: pointer"
 					>
@@ -68,9 +69,9 @@
 					</th>
 					<th
 						scope="col"
-						(click)="ordenarPor('asistente')"
+						(click)="ordenarPor('email')"
 						[ngClass]="{
-							'text-primary': columnaOrdenada === 'asistente'
+							'text-primary': columnaOrdenada === 'email'
 						}"
 						style="cursor: pointer"
 					>
@@ -78,9 +79,9 @@
 					</th>
 					<th
 						scope="col"
-						(click)="ordenarPor('asistente')"
+						(click)="ordenarPor('rol')"
 						[ngClass]="{
-							'text-primary': columnaOrdenada === 'asistente'
+							'text-primary': columnaOrdenada === 'rol'
 						}"
 						style="cursor: pointer"
 					>
@@ -88,9 +89,9 @@
 					</th>
 					<th
 						scope="col"
-						(click)="ordenarPor('asistente')"
+						(click)="ordenarPor('estado')"
 						[ngClass]="{
-							'text-primary': columnaOrdenada === 'asistente'
+							'text-primary': columnaOrdenada === 'estado'
 						}"
 						style="cursor: pointer"
 					>
@@ -146,8 +147,8 @@
 
 	<!-- Mensaje cuando no hay asistentes -->
 	<div class="text-center" *ngIf="participaciones.length === 0">
-		<h3>No hay asistentes registrados</h3>
-		<p class="text-muted" *ngIf="fechaActual">
+		<h3>No hay participantes registrados registrados</h3>
+		<p class="text-muted" *ngIf="!fechaActual">
 			Nadie se ha unido al evento aún
 		</p>
 		<p class="text-muted" *ngIf="fechaActual">

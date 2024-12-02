@@ -1,19 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ParticipacionService } from '../participacion.service';
-import {
-	FormsModule,
-	NgForm,
-	NgModel,
-	ReactiveFormsModule,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Asistente } from '../../models/asistente.model';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { Participacion } from '../../models/participacion.model';
 import { Evento } from '../../models/evento.model';
-
-type ColumnaOrdenada = keyof Participacion | keyof Participacion['asistente'];
 
 @Component({
 	selector: 'app-participacion-por-evento-list',
@@ -31,7 +24,8 @@ type ColumnaOrdenada = keyof Participacion | keyof Participacion['asistente'];
 })
 export class ParticipacionPorEventoListComponent implements OnInit {
 	idEvento: string = '';
-	evento!: Evento;
+	evento: Evento | null = null;
+	asistentes: Asistente[] = [];
 	fechaActual: boolean = false;
 	participaciones: Participacion[] = [];
 	filtro: string = '';
@@ -41,7 +35,7 @@ export class ParticipacionPorEventoListComponent implements OnInit {
 	paginas: number[] = [];
 	opcionesFilas: number[] = [5, 10, 15, 20, 25, 50, 100];
 
-	columnaOrdenada: ColumnaOrdenada = 'asistente'; // Valor predeterminado
+	columnaOrdenada: keyof Asistente = 'nombre';
 	ordenAscendente: boolean = true;
 
 	showModal: boolean = false; // Modal inicialmente cerrado
@@ -71,12 +65,19 @@ export class ParticipacionPorEventoListComponent implements OnInit {
 			.subscribe((response: any) => {
 				this.participaciones = response.participaciones;
 				this.evento = response.evento;
+				this.participaciones.forEach((participacion) => {
+					if (participacion.Asistente != undefined) {
+						this.asistentes?.push(participacion.Asistente);
+					}
+				});
 				this.totalPaginas = response.totalPaginas;
 				const fechaActual = new Date().toISOString().slice(0, 10);
-				const fechaEvento = new Date(this.evento.fecha)
-					.toISOString()
-					.slice(0, 10);
-				this.fechaActual = fechaEvento > fechaActual;
+				if (this.evento != null) {
+					const fechaEvento = new Date(this.evento.fecha)
+						.toISOString()
+						.slice(0, 10);
+					this.fechaActual = fechaEvento > fechaActual;
+				}
 				this.generarPaginacion();
 			});
 	}
@@ -121,28 +122,35 @@ export class ParticipacionPorEventoListComponent implements OnInit {
 		}
 	}
 
-	ordenarPor(columna: ColumnaOrdenada): void {
-		// Verificar si la columna corresponde a una propiedad dentro de 'asistente'
-		if (columna.startsWith('asistente.')) {
-			// Extraer el campo (por ejemplo 'nombre', 'domicilio', etc.)
-			const campo = columna.split('.')[1];
-
-			// Ordenar las participaciones por la propiedad dentro de 'asistente'
-			this.participaciones.sort((a, b) => {
-				const valorA = a.asistente ? [campo] : '';
-				const valorB = b.asistente ? [campo] : '';
-				return valorA > valorB ? 1 : valorA < valorB ? -1 : 0;
-			});
+	// Función de ordenamiento
+	ordenarPor(columna: keyof Asistente): void {
+		// Si se hace clic en la misma columna, se invierte el orden
+		if (this.columnaOrdenada === columna) {
+			this.ordenAscendente = !this.ordenAscendente;
 		} else {
-			// Ordenar por propiedades que no sean de 'asistente' (como confirmacion)
-			this.participaciones.sort((a, b) => {
-				const valorA = (a as any)[columna];
-				const valorB = (b as any)[columna];
-				return valorA > valorB ? 1 : valorA < valorB ? -1 : 0;
-			});
+			this.columnaOrdenada = columna;
+			this.ordenAscendente = true;
 		}
-		// Actualizar la columna ordenada
-		this.columnaOrdenada = columna;
+
+		// Ordenar las participaciones basándose en la propiedad del Asistente
+		this.participaciones.sort((a, b) => {
+			const valorA = a.Asistente?.[columna] ?? ''; // Usar un valor por defecto si es undefined
+			const valorB = b.Asistente?.[columna] ?? ''; // Usar un valor por defecto si es undefined
+
+			if (typeof valorA === 'string' && typeof valorB === 'string') {
+				return this.ordenAscendente
+					? valorA.localeCompare(valorB)
+					: valorB.localeCompare(valorA);
+			}
+
+			if (valorA < valorB) {
+				return this.ordenAscendente ? -1 : 1;
+			}
+			if (valorA > valorB) {
+				return this.ordenAscendente ? 1 : -1;
+			}
+			return 0;
+		});
 	}
 
 	editarParticipacion(idParticipacion: number) {}
