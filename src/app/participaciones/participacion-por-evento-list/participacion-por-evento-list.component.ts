@@ -153,24 +153,36 @@ export class ParticipacionPorEventoListComponent implements OnInit {
 		});
 	}
 
-	editarParticipacion(idParticipacion: number) {}
+
+	confirmarParticipacion(idParticipacion: number){
+		this.participacionesService.confirmarParticipacion(idParticipacion).subscribe(() => {
+			this.cargarParticipaciones();
+		});
+	}
+
+	cancelarParticipacion(idParticipacion: number){
+		this.participacionesService.bajaConfirmacion(idParticipacion).subscribe(() => {
+			this.cargarParticipaciones();
+		});
+	}
 
 	eliminarParticipacion(participacion: Participacion): void {
 		this.showModal = true;
-		this.message = `¿Estás seguro de que deseas eliminar al participante: ${participacion.asistente?.nombre}? Esta acción es irreversible.`;
+		this.message = `¿Estás seguro de que deseas eliminar al participante: ${participacion.Asistente?.nombre}? Esta acción es irreversible.`;
 		this.participacionSeleccionado = participacion;
 	}
 
 	confirmarEliminacion(confirmado: boolean): void {
 		if (confirmado && this.participacionSeleccionado) {
 			this.participacionesService
-				.eliminarParticipacion(this.participacionSeleccionado.idEvento)
+				.eliminarParticipacion(this.participacionSeleccionado.idParticipacion)
 				.subscribe(() => {
 					this.participaciones = this.participaciones.filter(
 						(a) =>
 							a.idEvento !==
 							this.participacionSeleccionado?.idEvento
 					);
+					this.cargarParticipaciones();
 				});
 		}
 

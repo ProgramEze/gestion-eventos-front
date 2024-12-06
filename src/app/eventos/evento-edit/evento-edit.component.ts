@@ -12,6 +12,7 @@ import {
 	ValidationErrors,
 } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
+import { LoginService } from '../../login/login.service';
 
 @Component({
 	selector: 'app-evento-edit',
@@ -25,6 +26,7 @@ export class EventoEditComponent implements OnInit {
 	eventoForm: FormGroup;
 	eventoId!: number;
 	evento!: Evento;
+	isOrganizer: boolean = false;
 	esModoEdicion: boolean = false; // Nueva propiedad
 	mensaje: string = ''; // Nueva propiedad
 	mensajeClase: string = ''; // Nueva propiedad
@@ -34,6 +36,7 @@ export class EventoEditComponent implements OnInit {
 		private fb: FormBuilder,
 		private route: ActivatedRoute,
 		private router: Router,
+		private loginService: LoginService,
 		private eventoService: EventoService
 	) {
 		this.eventoForm = this.fb.group({
@@ -46,6 +49,7 @@ export class EventoEditComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.eventoId = +this.route.snapshot.paramMap.get('id')!;
+		this.isOrganizer = this.loginService.isRoleIn() == 'Organizador';
 		if (this.eventoId) {
 			this.cargarEvento();
 		}

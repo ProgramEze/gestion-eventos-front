@@ -7,7 +7,7 @@
 		(confirmAction)="confirmarEliminacion($event)"
 	></app-confirm-modal>
 	<div class="evento-info d-flex justify-content-center align-items-center">
-		<h2> {{ evento?.nombre }} </h2>
+		<h2>{{ evento?.nombre }}</h2>
 		<!-- Updated line -->
 	</div>
 	<!-- Fila de título y controles -->
@@ -122,22 +122,36 @@
 					</td>
 					<td>
 						<button
-							class="btn btn-sm btn-primary me-2"
-							title="Ver detalles"
-							(click)="
-								editarParticipacion(
-									participante.idParticipacion
-								)
-							"
-						>
-							<i class="bi bi-eye"></i>
-						</button>
-						<button
+						*ngIf="fechaActual"
 							title="Eliminar participante"
 							class="btn btn-danger btn-sm"
 							(click)="eliminarParticipacion(participante)"
 						>
 							<i class="bi bi-trash"></i>
+						</button>
+						<button
+							*ngIf="!fechaActual && !participante.confirmacion"
+							title="Confirmar asistencia"
+							class="btn btn-success btn-sm ms-2"
+							(click)="
+								confirmarParticipacion(
+									participante.idParticipacion
+								)
+							"
+						>
+							<i class="bi bi-check-circle"></i>
+						</button>
+						<button
+							*ngIf="!fechaActual && participante.confirmacion"
+							title="Cancelar asistencia"
+							class="btn btn-warning btn-sm ms-2"
+							(click)="
+								cancelarParticipacion(
+									participante.idParticipacion
+								)
+							"
+						>
+							<i class="bi bi-x-circle"></i>
 						</button>
 					</td>
 				</tr>

@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 @Component({
 	selector: 'app-login',
 	standalone: true,
-	imports: [ReactiveFormsModule, CommonModule, RouterLink],
+	imports: [ReactiveFormsModule, CommonModule],
 	templateUrl: './login.component.html',
 	styleUrls: ['./login.component.css'],
 })
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
 					if (response.user.rol === 'Organizador') {
 						this.router.navigate(['/asistentes']);
 					} else if (response.user.rol === 'Asistente') {
-						this.router.navigate(['/eventos']);
+						this.router.navigate(['/']);
 					}
 				},
 				(error) => {

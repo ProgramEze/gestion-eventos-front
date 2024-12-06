@@ -11,6 +11,7 @@ export interface Participacion {
 		rol?: string;
 	};
 	Asistente?: Asistente;
+	Evento?: Evento;
 	idEvento: number;
 	evento?: Evento;
 	confirmacion: boolean;

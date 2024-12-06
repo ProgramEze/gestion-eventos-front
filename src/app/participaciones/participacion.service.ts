@@ -2,11 +2,9 @@ import { Participacion } from '../models/participacion.model';
 import { Injectable } from '@angular/core';
 import {
 	HttpClient,
-	HttpErrorResponse,
-	HttpHeaders,
 	HttpParams,
 } from '@angular/common/http';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { Observable} from 'rxjs';
 import { ParticipacionResponse } from './ParticipacionResponse';
 
 @Injectable({
@@ -17,14 +15,13 @@ export class ParticipacionService {
 	constructor(private http: HttpClient) {}
 
 	// Crear una nueva participación
-	crearParticipacion(participacion: {
-		idAsistente: number;
-		idEvento: number;
-	}): Observable<any> {
-		return this.http.post(this.apiUrl, participacion, {
+	crearParticipacion(idEvento: number): Observable<any> {
+		let idAsistente = sessionStorage.getItem('idAsistente');
+		let credentials = { idAsistente, idEvento };
+		return this.http.post(this.apiUrl, credentials, {
 			withCredentials: true, // Si necesitas enviar cookies o credenciales
 		});
-	}
+	}//
 
 	// Obtener participaciones por evento
 	obtenerParticipacionesPorEvento(
@@ -47,71 +44,64 @@ export class ParticipacionService {
 				withCredentials: true,
 			}
 		);
-	}
+	}//
 
 	// Obtener participaciones por asistente
-	obtenerParticipacionesPorAsistente(idAsistente: number): Observable<any> {
-		return this.http.get(`${this.apiUrl}/asistente/${idAsistente}`);
-	}
+	obtenerParticipacionesPorAsistente(): Observable<Participacion[]> {
+		const idAsistente = sessionStorage.getItem('idAsistente');
+		return this.http.get<Participacion[]>(
+			`${this.apiUrl}/asistente/${idAsistente}`,
+			{
+				withCredentials: true,
+			}
+		);
+	}//
 
 	// Obtener participación por ID
-	obtenerParticipacionPorId(idParticipacion: number): Observable<any> {
-		return this.http.get(`${this.apiUrl}/${idParticipacion}`);
-	}
-
-	// Confirmar una participación
-	confirmarParticipacion(idParticipacion: number): Observable<any> {
-		return this.http.put(`${this.apiUrl}/confirmar/${idParticipacion}`, {});
-	}
+	obtenerParticipacionPorId(idEvento: number): Observable<Participacion> {
+		const idAsistente = sessionStorage.getItem('idAsistente');
+		return this.http.get<Participacion>(
+			`${this.apiUrl}?idAsistente=${idAsistente}&idEvento=${idEvento}`,
+			{
+				withCredentials: true, // Si necesitas enviar cookies o credenciales
+			}
+		);
+	}//
 
 	// Baja de confirmación de una participación
 	bajaConfirmacion(idParticipacion: number): Observable<any> {
-		return this.http.put(`${this.apiUrl}/baja/${idParticipacion}`, {});
-	}
+		return this.http.put(
+			`${this.apiUrl}/baja/${idParticipacion}`,
+			{},
+			{
+				withCredentials: true, // Esto es necesario si la autenticación es por cookies
+			}
+		);
+	}//
 
 	// Eliminar una participación
 	eliminarParticipacion(idParticipacion: number): Observable<any> {
-		return this.http.delete(`${this.apiUrl}/eliminar/${idParticipacion}`);
-	}
+		return this.http.delete(`${this.apiUrl}/eliminar/${idParticipacion}`, {
+			withCredentials: true,
+		});
+	}//
 
 	// Generar certificado en PDF de una participación
 	generarCertificado(idParticipacion: number): Observable<Blob> {
 		return this.http.get(`${this.apiUrl}/certificado/${idParticipacion}`, {
-			responseType: 'blob', // Recibir el PDF como un archivo Blob
+			responseType: 'blob', // Para recibir el archivo como Blob
+			withCredentials: true, // En caso de autenticación basada en cookies
 		});
-	}
+	}//
 
-	// Obtener participaciones no confirmadas por evento
-	obtenerParticipacionesPorConfirmarPorEvento(
-		idEvento: number
-	): Observable<any> {
-		return this.http.get(
-			`${this.apiUrl}/evento/no-confirmados/${idEvento}`
-		);
-	}
-
-	// Obtener participaciones confirmadas por evento
-	obtenerParticipacionesConfirmadasPorEvento(
-		idEvento: number
-	): Observable<any> {
-		return this.http.get(`${this.apiUrl}/evento/confirmados/${idEvento}`);
-	}
-
-	// Obtener participaciones no confirmadas por asistente
-	obtenerParticipacionesPorConfirmarPorAsistente(
-		idAsistente: number
-	): Observable<any> {
-		return this.http.get(
-			`${this.apiUrl}/asistente/no-confirmados/${idAsistente}`
-		);
-	}
-
-	// Obtener participaciones confirmadas por asistente
-	obtenerParticipacionesConfirmadasPorAsistente(
-		idAsistente: number
-	): Observable<any> {
-		return this.http.get(
-			`${this.apiUrl}/asistente/confirmados/${idAsistente}`
+	// Confirmar una participación
+	confirmarParticipacion(idParticipacion: number): Observable<any> {
+		return this.http.put(
+			`${this.apiUrl}/confirmar/${idParticipacion}`,
+			{},
+			{
+				withCredentials: true, // Esto es necesario si la autenticación es por cookies
+			}
 		);
 	}
 }

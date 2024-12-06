@@ -56,7 +56,7 @@ export const routes: Routes = [
 		path: 'eventos/:id',
 		component: EventoEditComponent,
 		canActivate: [LoginGuard],
-		data: { roles: ['Organizador'] },
+		data: { roles: ['Organizador', 'Asistente'] },
 	},
 	{
 		path: 'participaciones/evento/:id',

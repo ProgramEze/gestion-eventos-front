@@ -14,7 +14,7 @@ import { EventoService } from '../evento.service';
 	templateUrl: './evento-create.component.html',
 	styleUrls: ['./evento-create.component.css'],
 	standalone: true,
-	imports: [DatePipe, ReactiveFormsModule, NgClass, NgIf, RouterLink],
+	imports: [ReactiveFormsModule, NgClass, NgIf, RouterLink],
 })
 export class EventoCreateComponent {
 	eventoForm: FormGroup;

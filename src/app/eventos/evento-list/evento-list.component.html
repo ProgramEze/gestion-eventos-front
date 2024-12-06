@@ -27,7 +27,10 @@
 					</button>
 
 					<!-- Menú desplegable para filtrar eventos -->
-					<div class="input-group d-flex align-items-center mb-3" style="width: 400px">
+					<div
+						class="input-group d-flex align-items-center mb-3"
+						style="width: 400px"
+					>
 						<label for="filtroEventos" class="me-2"
 							>Filtrar eventos:</label
 						>
@@ -37,19 +40,24 @@
 							[(ngModel)]="filtroEventos"
 							(change)="cambiarFiltro()"
 						>
-							<option value="todos">Todos los eventos</option>
 							<option value="participo">
 								Eventos en los que participo
 							</option>
 							<option value="noParticipo">
 								Eventos en los que no participo
 							</option>
+							<option *ngIf="isOrganizer" value="todos">
+								Todos los eventos
+							</option>
 						</select>
 					</div>
 
 					<!-- Filtros por fecha -->
 					<div class="d-flex mb-2">
-						<div class="input-group align-items-center" style="width: 250px">
+						<div
+							class="input-group align-items-center"
+							style="width: 250px"
+						>
 							<span class="me-2">Desde:</span>
 							<input
 								type="date"
@@ -59,7 +67,10 @@
 								aria-label="Fecha de inicio"
 							/>
 						</div>
-						<div class="input-group align-items-center" style="width: 250px">
+						<div
+							class="input-group align-items-center"
+							style="width: 250px"
+						>
 							<span class="me-2 ms-2">Hasta:</span>
 							<input
 								type="date"
@@ -172,39 +183,113 @@
 					<td>{{ evento.descripcion }}</td>
 					<td class="d-flex text-center">
 						<div
-							class="justify-content-center centered d-flex justify-content-center align-items-center"
+							class="button-group justify-content-center text-center centered d-flex justify-content-center align-items-center"
 						>
-							<button
-								class="btn btn-sm btn-primary me-2"
-								title="Ver detalles"
-								(click)="unirseAEvento(evento.idEvento)"
-							>
-								<i class="bi bi-chevron-left"></i>
-							</button>
-							<button
+							<div
 								*ngIf="isOrganizer"
-								class="btn btn-sm btn-warning me-2"
-								title="Editar evento"
-								(click)="editarEvento(evento.idEvento)"
+								class="button-group justify-content-center text-center centered d-flex justify-content-center align-items-center"
 							>
-								<i class="bi bi-pencil"></i>
-							</button>
-							<button
-								*ngIf="isOrganizer"
-								class="btn btn-sm btn-secondary me-2"
-								title="Ver participantes"
-								(click)="verParticipaciones(evento.idEvento)"
+								<button
+									class="btn btn-sm btn-secondary"
+									title="Ver participantes"
+									(click)="
+										verParticipaciones(evento.idEvento)
+									"
+								>
+									<i class="bi bi-eye"></i>
+								</button>
+								<button
+									class="btn btn-sm btn-warning ms-2"
+									title="Editar evento"
+									(click)="editarEvento(evento.idEvento)"
+								>
+									<i class="bi bi-pencil"></i>
+								</button>
+								<button
+									*ngIf="!fechaSuperiorValidador(evento)"
+									title="Eliminar evento"
+									class="btn btn-danger btn-sm ms-2"
+									(click)="eliminarEvento(evento)"
+								>
+									<i class="bi bi-trash"></i>
+								</button>
+								<button
+									*ngIf="
+										filtroEventos == 'noParticipo' &&
+										!fechaSuperiorValidador(evento)
+									"
+									class="btn btn-sm btn-success ms-2"
+									title="Unirme al evento"
+									(click)="unirseAEvento(evento.idEvento)"
+								>
+									<i class="bi bi-check-circle"></i>
+								</button>
+								<button
+									*ngIf="
+										filtroEventos == 'participo' &&
+										!fechaSuperiorValidador(evento)
+									"
+									class="btn btn-sm btn-danger ms-2"
+									title="Dar de baja participación"
+									(click)="bajaParticipacion(evento)"
+								>
+									<i class="bi bi-x-circle"></i>
+								</button>
+								<button
+								*ngIf="fechaSuperiorValidador(evento) && filtroEventos == 'participo' && obtenerConfirmacion(evento.idEvento)"
+								class="btn btn-sm btn-warning ms-2"
+								title="Descargar PDF"
+								(click)="descargarPDF(evento.idEvento)"
 							>
-								<i class="bi bi-eye"></i>
+								<i
+									class="bi bi-file-earmark-arrow-down-fill"
+								></i>
 							</button>
-							<button
-								*ngIf="isOrganizer"
-								title="Eliminar asistente"
-								class="btn btn-danger btn-sm"
-								(click)="eliminarEvento(evento)"
+							</div>
+							<div
+								*ngIf="!isOrganizer"
+								class="button-group justify-content-center text-center centered d-flex justify-content-center align-items-center"
 							>
-								<i class="bi bi-trash"></i>
+								<button
+									class="btn btn-sm btn-secondary"
+									title="Ver evento"
+									(click)="editarEvento(evento.idEvento)"
+								>
+									<i class="bi bi-eye"></i>
+								</button>
+								<button
+									*ngIf="
+										filtroEventos == 'noParticipo' &&
+										!fechaSuperiorValidador(evento)
+									"
+									class="btn btn-sm btn-success ms-2"
+									title="Unirme al evento"
+									(click)="unirseAEvento(evento.idEvento)"
+								>
+									<i class="bi bi-check-circle"></i>
+								</button>
+								<button
+									*ngIf="
+										filtroEventos == 'participo' &&
+										!fechaSuperiorValidador(evento)
+									"
+									class="btn btn-sm btn-danger ms-2"
+									title="Dar de baja participación"
+									(click)="bajaParticipacion(evento)"
+								>
+									<i class="bi bi-x-circle"></i>
+								</button>
+								<button
+								*ngIf="fechaSuperiorValidador(evento) && filtroEventos == 'participo' && obtenerConfirmacion(evento.idEvento)"
+								class="btn btn-sm btn-warning ms-2"
+								title="Descargar PDF"
+								(click)="descargarPDF(evento.idEvento)"
+							>
+								<i
+									class="bi bi-file-earmark-arrow-down-fill"
+								></i>
 							</button>
+							</div>
 						</div>
 					</td>
 				</tr>
